@@ -2,11 +2,13 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
         <title>Fluid Paint</title>
 
         <meta name="description" content="Fluid paint simulation">
 
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+        <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'> -->
+        <!-- <link href='OpenSans.css' rel='stylesheet' type='text/css'>  -->
         <link rel="stylesheet" href="paint.css">
     </head>
 
@@ -35,6 +37,8 @@
                 <div class="control-label">Paint Color</div>
 
                 <div id="undo-button" class="button">Undo</div><div id="redo-button" class="button">Redo</div>
+
+                <div id="exit-button" class="button">Exit</div>
             </div>
 
 
@@ -75,7 +79,7 @@
             'use strict';
 
             var canvas = document.createElement('canvas');
-            var wgl = WrappedGL.create(canvas);
+            var wgl = WrappedGL.create(canvas, { alpha : true });
 
             if (wgl !== null && wgl.hasFloatTextureSupport()) { //required features are supported
                 document.body.appendChild(canvas);

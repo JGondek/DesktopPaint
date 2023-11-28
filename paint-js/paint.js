@@ -44,7 +44,7 @@ var Paint = (function () {
     var INITIAL_QUALITY = 1;
 
 
-    var INITIAL_PADDING = 100;
+    var INITIAL_PADDING = 0;
     var MIN_PAINTING_WIDTH = 300;
     var MAX_PAINTING_WIDTH = 4096; //this is further constrained by the maximum texture size
 
@@ -72,7 +72,7 @@ var Paint = (function () {
 
     //panel is aligned with the top left
     var PANEL_WIDTH = 300;
-    var PANEL_HEIGHT = 580;
+    var PANEL_HEIGHT = 630;
     var PANEL_BLUR_SAMPLES = 13;
     var PANEL_BLUR_STRIDE = 8;
 
@@ -89,7 +89,7 @@ var Paint = (function () {
     var PANEL_SHADOW_ALPHA = 1.0;
 
     //rendering parameters
-    var BACKGROUND_GRAY = 0.7;
+    var BACKGROUND_GRAY = 0.1215;//0.7;
     var NORMAL_SCALE = 7.0;
     var ROUGHNESS = 0.075;
     var F0 = 0.05;
@@ -427,6 +427,16 @@ var Paint = (function () {
                 this.redo();
             }).bind(this));
 
+
+            // this is handled by ipcMain in main.js
+            // this.exitButton = document.getElementById('exit-button');  
+            // this.exitButton.addEventListener('click', this.exit.bind(this));
+            // this.exitButton.addEventListener('touchstart', (function (event) {
+            //     event.preventDefault();
+
+            //     this.exit();
+            // }).bind(this));
+
             this.refreshDoButtons();
 
 
@@ -610,6 +620,8 @@ var Paint = (function () {
 
             var splatVelocityScale = SPLAT_VELOCITY_SCALE * splatColor[3] * this.resolutionScale;
 
+            //splatColor[3] = 1.0;
+
             //splat paint
             this.simulator.splat(this.brush, Z_THRESHOLD * this.brushScale, this.paintingRectangle, splatColor, splatRadius, splatVelocityScale);
 
@@ -630,7 +642,7 @@ var Paint = (function () {
             wgl.framebufferTexture2D(this.framebuffer, wgl.FRAMEBUFFER, wgl.COLOR_ATTACHMENT0, wgl.TEXTURE_2D, this.canvasTexture, 0);
             var clearState = wgl.createClearState()
                 .bindFramebuffer(this.framebuffer)
-                .clearColor(BACKGROUND_GRAY, BACKGROUND_GRAY, BACKGROUND_GRAY, 1.0);
+                .clearColor(BACKGROUND_GRAY, BACKGROUND_GRAY, BACKGROUND_GRAY, 0.0);
 
             wgl.clear(clearState, wgl.COLOR_BUFFER_BIT | wgl.DEPTH_BUFFER_BIT);
 
@@ -645,6 +657,11 @@ var Paint = (function () {
 
             var paintingDrawState = wgl.createDrawState()
                 .bindFramebuffer(this.framebuffer)
+
+                .enable(wgl.BLEND)
+                .blendEquation(wgl.FUNC_ADD)
+                .blendFuncSeparate(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA, wgl.ONE, wgl.ONE)
+
                 .vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation('a_position'), 2, wgl.FLOAT, false, 0, 0)
                 .useProgram(paintingProgram)
                 .uniform1f('u_featherSize', RESIZING_FEATHER_SIZE)
@@ -673,7 +690,12 @@ var Paint = (function () {
           .viewport(0, 0, this.canvas.width, this.canvas.height)
           .useProgram(this.outputProgram)
           .uniformTexture('u_input', 0, wgl.TEXTURE_2D, this.canvasTexture)
-          .vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0);
+          .vertexAttribPointer(this.quadVertexBuffer, 0, 2, wgl.FLOAT, wgl.FALSE, 0, 0)
+          
+          .enable(wgl.BLEND)
+          .blendEquation(wgl.FUNC_ADD)
+          .blendFuncSeparate(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA, wgl.ONE, wgl.ONE)
+          ;
 
         wgl.drawArrays(outputDrawState, wgl.TRIANGLE_STRIP, 0, 4);
 
@@ -697,7 +719,8 @@ var Paint = (function () {
                 .enable(wgl.DEPTH_TEST)
 
                 .enable(wgl.BLEND)
-                .blendFunc(wgl.DST_COLOR, wgl.ZERO)
+                .blendEquation(wgl.FUNC_ADD)
+                .blendFuncSeparate(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA, wgl.ONE, wgl.ONE)
 
                 .uniformTexture('u_positionsTexture', 0, wgl.TEXTURE_2D, this.brush.positionsTexture);
 
@@ -802,6 +825,14 @@ var Paint = (function () {
         this.simulator.clear();
 
         this.needsRedraw = true;
+    };
+
+    
+    Paint.prototype.exit = function () {
+        
+        const remote = require('electron').remote;
+        var window = remote.getCurrentWindow();
+        window.close();
     };
 
 

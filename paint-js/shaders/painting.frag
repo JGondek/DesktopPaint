@@ -141,6 +141,26 @@ void main () {
 
     vec4 value = samplePaintTexture(coordinates); //r, g, b, height
 
+    vec3 color = rybToRgb(value.rgb);
+
+
+    float alpha = 1.0;
+
+    float variance1 = abs(color.r - color.g);
+    float variance2 = abs(color.r - color.b);
+    float variance3 = abs(color.g - color.b);
+    float variance = max(max(variance1, variance2), variance3);
+    float boundary = 0.7;
+
+    if(variance < boundary) 
+    {
+        // low saturation color found (black/gray/white)
+        // if whitish - convert to transparency
+        alpha = max(1.0 - color.r, 0.0);
+    }
+
+    alpha = value.a;
+
     vec2 gradient = computeGradient(coordinates);
     vec3 normal = normalize(vec3(
         gradient.x,
@@ -157,9 +177,7 @@ void main () {
 
     float specular = specularBRDF(lightDirection, eyeDirection, normal, u_roughness, u_F0);
 
-    vec3 color = rybToRgb(value.rgb);
-
     vec3 surfaceColor = color * diffuse + specular * u_specularScale;
     
-    gl_FragColor = vec4(surfaceColor, 1.0);
+    gl_FragColor = vec4(surfaceColor, alpha);
 }
