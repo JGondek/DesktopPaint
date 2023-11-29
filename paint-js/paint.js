@@ -89,7 +89,7 @@ var Paint = (function () {
     var PANEL_SHADOW_ALPHA = 1.0;
 
     //rendering parameters
-    var BACKGROUND_GRAY = 0.1215;//0.7;
+    var BACKGROUND_GRAY = 0.0;//0.1215;//0.7;
     var NORMAL_SCALE = 7.0;
     var ROUGHNESS = 0.075;
     var F0 = 0.05;
@@ -660,7 +660,8 @@ var Paint = (function () {
 
                 .enable(wgl.BLEND)
                 .blendEquation(wgl.FUNC_ADD)
-                .blendFuncSeparate(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA, wgl.ONE, wgl.ONE)
+                //.blendFuncSeparate(wgl.SRC_ALPHA, wgl.ONE_MINUS_SRC_ALPHA, wgl.ONE, wgl.ONE)
+                .blendFuncSeparate(wgl.ONE, wgl.ONE, wgl.SRC_ALPHA, wgl.SRC_ALPHA)
 
                 .vertexAttribPointer(this.quadVertexBuffer, paintingProgram.getAttribLocation('a_position'), 2, wgl.FLOAT, false, 0, 0)
                 .useProgram(paintingProgram)

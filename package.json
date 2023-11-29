@@ -1,5 +1,5 @@
 {
-  "name": "fluid-paint",
+  "name": "desktop-paint",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -16,8 +16,8 @@
   },
 
   "build": {
-    "appId": "fluid-paint",
-    "productName": "Fluid Paint",
+    "appId": "desktop-paint",
+    "productName": "Desktop Paint",
     "copyright": "David Li / Jakub Gondek",
     "mac": {
       "category": "public.app-category.utilities",
@@ -48,7 +48,7 @@
     "dmg": {
       "background": "assets/background.png",
       "icon": "assets/icon.icns",
-      "title": "Fluid Paint Installer"
+      "title": "Desktop Paint Installer"
     },
     "nsis": {
       "oneClick": false,

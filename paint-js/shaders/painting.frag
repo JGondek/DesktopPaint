@@ -143,9 +143,9 @@ void main () {
 
     vec3 color = rybToRgb(value.rgb);
 
-
     float alpha = 1.0;
 
+/*
     float variance1 = abs(color.r - color.g);
     float variance2 = abs(color.r - color.b);
     float variance3 = abs(color.g - color.b);
@@ -158,7 +158,7 @@ void main () {
         // if whitish - convert to transparency
         alpha = max(1.0 - color.r, 0.0);
     }
-
+*/
     alpha = value.a;
 
     vec2 gradient = computeGradient(coordinates);
